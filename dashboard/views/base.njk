@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vouch Bot | {% block title %}Dashboard{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <div id="glow"></div>
+    
+    <aside class="sidebar">
+        <div class="logo">
+            <i class="fas fa-shield-halved"></i>
+            <span>Vouch Bot</span>
+        </div>
+
+        <nav class="side-nav">
+            <a href="/" class="side-link {% if page == 'index' %}active{% endif %}">
+                <i class="fas fa-chart-line"></i>
+                <span>Insights</span>
+            </a>
+            <a href="/lookup" class="side-link {% if page == 'lookup' %}active{% endif %}">
+                <i class="fas fa-magnifying-glass"></i>
+                <span>User Lookup</span>
+            </a>
+            <a href="/vouch" class="side-link {% if page == 'vouch' %}active{% endif %}">
+                <i class="fas fa-file-signature"></i>
+                <span>Submit Vouch</span>
+            </a>
+            {% if user %}
+            <a href="/select-server" class="side-link {% if page == 'admin' or page == 'select-server' %}active{% endif %}">
+                <i class="fas fa-gears"></i>
+                <span>Administration</span>
+            </a>
+            {% endif %}
+        </nav>
+
+        {% if user %}
+        <a href="/lookup?query={{ user.id }}" class="profile-link">
+            <div class="profile-card">
+                <img src="{{ user.avatarUrl }}" alt="" class="profile-avatar">
+                <div class="profile-info">
+                    <h4>{{ user.username }}</h4>
+                    <p>#{{ user.discriminator or "0" }}</p>
+                    <a href="/logout" class="logout-link">Logout</a>
+                </div>
+            </div>
+        </a>
+        {% else %}
+        <a href="/login" class="login-btn">
+            <i class="fab fa-discord"></i>
+            <span>Login to System</span>
+        </a>
+        {% endif %}
+    </aside>
+
+    <main class="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script src="/script.js"></script>
+</body>
+</html>

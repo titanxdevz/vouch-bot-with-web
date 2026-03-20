@@ -1,0 +1,86 @@
+{% extends "base.njk" %}
+
+{% block title %}Insights | Reputation Statistics{% endblock %}
+
+{% block content %}
+<section id="hero" class="fade-in">
+    <h1>Industrial <span class="gradient-text">Reputation</span> System</h1>
+    <p>Elevate your server's trust economy with the world's most advanced vouching infrastructure.</p>
+</section>
+
+<section id="stats" class="grid-stats">
+    <div class="stat-card blue slide-in" style="animation-delay: 0.1s;">
+        <div class="icon-wrap indigo"><i class="fas fa-server"></i></div>
+        <div class="stat-info">
+            <span class="label">Total Servers</span>
+            <h2 id="total-guilds">{{ stats.total_guilds }}</h2>
+        </div>
+    </div>
+    <div class="stat-card green slide-in" style="animation-delay: 0.2s;">
+        <div class="icon-wrap green"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+            <span class="label">Network Users</span>
+            <h2 id="total-users">{{ stats.total_users }}</h2>
+        </div>
+    </div>
+    <div class="stat-card gold slide-in" style="animation-delay: 0.3s;">
+        <div class="icon-wrap gold"><i class="fas fa-star"></i></div>
+        <div class="stat-info">
+            <span class="label">Verified Vouches</span>
+            <h2 id="total-vouches">{{ stats.total_vouches }}</h2>
+        </div>
+    </div>
+    <div class="stat-card pink slide-in" style="animation-delay: 0.4s;">
+        <div class="icon-wrap pink"><i class="fas fa-chart-line"></i></div>
+        <div class="stat-info">
+            <span class="label">Weekly Delta</span>
+            <h2 id="weekly-vouches">+ {{ stats.vouches_7d }}</h2>
+        </div>
+    </div>
+</section>
+
+<div class="content-row">
+    <section id="activity" class="panel fade-in" style="animation-delay: 0.5s;">
+        <div class="panel-header">
+            <h3><i class="fas fa-stream"></i> Global Activity Hub</h3>
+            <div class="live-indicator">ACTIVE STREAM</div>
+        </div>
+        <div id="vouch-feed" class="feed">
+            {% for v in recent %}
+            <div class="feed-item fade-in" style="animation-delay: {{ 0.6 + (loop.index0 * 0.1) }}s;">
+                <div class="vouch-id">#{{ v.id }}</div>
+                <div class="vouch-content">
+                    <div class="participant">
+                        <span>{{ v.giver_tag }}</span> vouched for <span>{{ v.receiver_tag }}</span>
+                    </div>
+                    <div class="vouch-meta">
+                        {% for i in range(0, v.rating) %}★{% endfor %}{% for i in range(0, 5-v.rating) %}☆{% endfor %} • "{{ v.comment or "No comment provided." }}"
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="placeholder-vouch">No recent activity found. Start vouching to build the feed!</div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <section id="leaderboard" class="panel fade-in" style="animation-delay: 0.7s;">
+        <div class="panel-header">
+            <h3><i class="fas fa-trophy"></i> Network Leaders</h3>
+        </div>
+        <div id="top-users" class="user-list">
+            {% for u in top %}
+            <div class="user-item slide-in" style="animation-delay: {{ 0.8 + (loop.index0 * 0.1) }}s;">
+                <div class="rank {% if loop.index == 1 %}gold-rank{% endif %}">{{ loop.index }}</div>
+                <div class="user-details">
+                    <h4>{{ u.username }}</h4>
+                    <span class="vouch-stats">{{ u.total_vouches }} Vouches • {{ u.average_rating | round(2) }} Avg Rating</span>
+                </div>
+            </div>
+            {% else %}
+            <div class="placeholder-vouch">Connecting to champions network...</div>
+            {% endfor %}
+        </div>
+    </section>
+</div>
+{% endblock %}

@@ -1,0 +1,113 @@
+{% extends "base.njk" %}
+
+{% block title %}User Lookup | Reputation Database{% endblock %}
+
+{% block content %}
+<section id="lookup-header" class="fade-in">
+    <h1 class="gradient-text">Network Directory</h1>
+    <p>Search the global reputation database by User ID or Username.</p>
+    
+    <div class="search-container slide-in" style="animation-delay: 0.1s;">
+        <form action="/lookup" method="GET" style="display: contents;">
+            <input type="text" name="query" placeholder="Enter User ID or Username..." value="{{ query }}">
+            <button type="submit" class="btn-primary"><i class="fas fa-search"></i> Search</button>
+        </form>
+    </div>
+</section>
+
+{% if target %}
+<div class="panel slide-in" style="animation-delay: 0.2s; margin-top: 2rem;">
+    <div class="profile-header">
+        <div class="avatar-wrap">
+            <img src="{{ target.avatar }}" alt="" class="profile-main-avatar">
+            {% if not target.isBlacklisted %}
+            <div class="status-ring"></div>
+            {% endif %}
+        </div>
+        <div class="profile-main-info">
+            <div class="user-info-row">
+                <h2>{{ target.username }}</h2>
+                <span class="user-id">#{{ target.id }}</span>
+            </div>
+            <div class="badge-row">
+                {% if target.isBlacklisted %}
+                <span class="badge red-badge"><i class="fas fa-ban"></i> Blacklisted</span>
+                {% else %}
+                <span class="badge green-badge"><i class="fas fa-check-circle"></i> Verified User</span>
+                {% endif %}
+                <span class="badge blue-badge"><i class="fas fa-award"></i> Level {{ (target.stats.total / 5) | round(0, 'floor') + 1 }}</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-stats" style="margin-top: 2rem;">
+        <div class="stat-card blue">
+            <div class="stat-info">
+                <span class="label">Total Records</span>
+                <h2>{{ target.stats.total }}</h2>
+            </div>
+        </div>
+        <div class="stat-card green">
+            <div class="stat-info">
+                <span class="label">Trust Index</span>
+                <h2>{{ target.stats.average | round(1) }}/5</h2>
+            </div>
+        </div>
+        <div class="stat-card gold">
+            <div class="stat-info">
+                <span class="label">Success Rate</span>
+                <h2>{{ (target.stats.average * 20) | round(0) }}%</h2>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-section" style="margin-top: 3rem;">
+        <h3 style="margin-bottom: 1.5rem;"><i class="fas fa-history"></i> Recent Reputation Record</h3>
+        <div class="feed">
+            {% for v in target.recent %}
+            <div class="feed-item fade-in" style="animation-delay: {{ 0.3 + (loop.index0 * 0.1) }}s;">
+                <div class="vouch-meta-sm">
+                    <span class="v-date">{{ v.date }}</span>
+                    <span class="v-stars">
+                        {% for i in range(0, v.rating) %}<i class="fas fa-star"></i>{% endfor %}
+                    </span>
+                </div>
+                <p class="v-comment">"{{ v.comment or "No comment provided." }}"</p>
+                <div class="v-giver">Documented by: <a href="/lookup?query={{ v.giver_id }}">{{ v.giver_tag }}</a></div>
+            </div>
+            {% else %}
+            <p class="empty-msg">No vouch history recorded for this user yet.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% elseif query %}
+<div class="error-panel fade-in">
+    <i class="fas fa-ghost"></i>
+    <h3>User Not Found</h3>
+    <p>No reputation data matching "<strong>{{ query }}</strong>" exists in our network.</p>
+    <a href="/lookup" class="btn-primary" style="display: inline-block; padding: 0.8rem 2rem; text-decoration: none; margin-top: 1rem;">Back to Directory</a>
+</div>
+{% endif %}
+
+<style>
+    .profile-header { display: flex; gap: 2rem; align-items: center; }
+    .avatar-wrap { position: relative; }
+    .profile-main-avatar { width: 100px; height: 100px; border-radius: 20px; border: 4px solid var(--border); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+    .status-ring { position: absolute; bottom: -5px; right: -5px; width: 25px; height: 25px; background: var(--secondary); border-radius: 50%; border: 4px solid var(--card-bg); animation: blink 2s infinite; }
+    .user-id { color: var(--text-secondary); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; opacity: 0.6; }
+    .badge-row { display: flex; gap: 0.8rem; margin-top: 0.8rem; }
+    .badge { padding: 0.4rem 1rem; border-radius: 8px; font-size: 0.75rem; font-weight: 800; display: flex; align-items: center; gap: 0.5rem; text-transform: uppercase; }
+    .blue-badge { background: var(--primary-glow); color: var(--primary); border: 1px solid var(--border); }
+    .green-badge { background: var(--secondary-glow); color: var(--secondary); border: 1px solid var(--border); }
+    .red-badge { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239,68,68,0.2); }
+    .vouch-meta-sm { display: flex; justify-content: space-between; margin-bottom: 0.5rem; }
+    .v-stars { color: var(--gold); font-size: 0.8rem; }
+    .v-date { font-size: 0.75rem; color: var(--text-secondary); font-weight: 600; }
+    .v-comment { color: white; font-size: 0.95rem; margin-bottom: 0.8rem; line-height: 1.6; }
+    .v-giver { font-size: 0.8rem; color: var(--text-secondary); }
+    .v-giver a { color: var(--primary); text-decoration: none; font-weight: 700; }
+    .error-panel { text-align: center; padding: 5rem; background: var(--card-bg); border: 1px solid var(--border); border-radius: 32px; margin-top: 3rem; }
+    .error-panel i { font-size: 4rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+</style>
+{% endblock %}

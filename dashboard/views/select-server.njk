@@ -1,0 +1,31 @@
+{% extends "base.njk" %}
+
+{% block title %}Select Server{% endblock %}
+
+{% block content %}
+<div id="hero">
+    <h1>Manage <span class="gradient-text">Your Servers</span></h1>
+    <p>Select a server to configure its reputation system settings and policies.</p>
+</div>
+
+<div class="select-server-list" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+    {% for guild in managedGuilds %}
+    <a href="/admin?guildId={{ guild.id }}" class="stat-card" style="text-decoration: none; color: inherit;">
+        <img src="{{ guild.icon }}" alt="{{ guild.name }}" style="width: 60px; height: 60px; border-radius: 16px;">
+        <div class="stat-info">
+            <span class="label">Server Management</span>
+            <h2>{{ guild.name }}</h2>
+        </div>
+        <i class="fas fa-arrow-right" style="margin-left: auto; color: var(--text-secondary);"></i>
+    </a>
+    {% else %}
+    <div class="panel" style="grid-column: 1 / -1; text-align: center;">
+        <i class="fas fa-triangle-exclamation" style="font-size: 3rem; color: var(--gold); margin-bottom: 1rem;"></i>
+        <h2>No Managed Servers Found</h2>
+        <p>You must be a Manager in a server where Vouch Bot is active to see it here.</p>
+        <br>
+        <a href="/" class="login-btn" style="display: inline-flex;">Return Home</a>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
